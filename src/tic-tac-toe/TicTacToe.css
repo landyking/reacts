@@ -1,0 +1,60 @@
+#tic-tac-toe {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+}
+#tic-tac-toe ol,
+#tic-tac-toe ul {
+  padding-left: 30px;
+}
+
+.board-row:after {
+  clear: both;
+  content: "";
+  display: table;
+}
+
+.status {
+  margin-bottom: 10px;
+}
+
+.square {
+  background: #fff;
+  border: 1px solid #999;
+  float: left;
+  font-size: 24px;
+  font-weight: bold;
+  line-height: 25vmin;
+  height: 25vmin;
+  margin-right: -1px;
+  margin-top: -1px;
+  padding: 0;
+  text-align: center;
+  width: 25vmin;
+}
+
+.square:focus {
+  outline: none;
+}
+
+.kbd-navigation .square:focus {
+  background: #ddd;
+}
+
+.game {
+  display: flex;
+}
+
+.game-info {
+  margin-left: 20px;
+}
+
+.begin-select {
+  display: flex;
+  flex-direction: column;
+}
+.begin-select button {
+  padding: 20px;
+  margin: 20px;
+}
