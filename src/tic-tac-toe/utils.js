@@ -1,3 +1,4 @@
+import { selectStep } from "../algorithm/MinMax";
 const winLines = [
   [0, 1, 2],
   [3, 4, 5],
@@ -17,7 +18,22 @@ export function calculateWinner(squares) {
   }
   return null;
 }
-
+function evaluateScore(squares, player, isEnd) {
+  if (isEnd) {
+    const winner = calculateWinner(squares);
+    if (winner === null) {
+      return 100;
+    } else if (winner === player) {
+      return 1000;
+    } else {
+      return 0;
+    }
+  }
+  return 0;
+}
+function evaluateStop(deep) {
+  return deep > 10;
+}
 export function generateStepByAI(squares, player: "O" | "X") {
-  return squares.findIndex((e) => e === null);
+  return selectStep(squares, player, evaluateScore, evaluateStop);
 }
