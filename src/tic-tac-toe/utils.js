@@ -16,6 +16,9 @@ export function calculateWinner(squares) {
       return squares[a];
     }
   }
+  if (squares.filter((e) => e === null).length === 0) {
+    return "draw";
+  }
   return null;
 }
 function evaluateScore(squares, player, isEnd) {
@@ -36,4 +39,11 @@ function evaluateStop(deep) {
 }
 export function generateStepByAI(squares, player: "O" | "X") {
   return selectStep(squares, player, evaluateScore, evaluateStop);
+}
+export function playerNot(player) {
+  if (player === "O") return "X";
+  return "O";
+}
+export function getNextPlayer(squares) {
+  return squares.filter((e) => e === null).length % 2 === 0 ? "X" : "O";
 }

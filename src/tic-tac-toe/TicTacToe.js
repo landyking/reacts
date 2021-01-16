@@ -1,44 +1,63 @@
-import React, { useState } from "react";
+import React, { useCallback, useState } from "react";
 import PlayingStage from "./PlayingStage";
 import "./TicTacToe.css";
 
-function BeginStage({ onNextStage }) {
+function BeginStage({ onNextStage, disabled }) {
   return (
     <div className="begin-select">
-      <button onClick={() => onNextStage(true)}>Start - Human first</button>
-      <button onClick={() => onNextStage(false)}>Start - Computer first</button>
+      <button disabled={disabled} onClick={() => onNextStage(true)}>
+        Start - Human first
+      </button>
+      <button disabled={disabled} onClick={() => onNextStage(false)}>
+        Start - Computer first
+      </button>
     </div>
   );
 }
 export default function TicTacToe(props) {
-  const [state, setState] = useState({ stage: 0, humanFirst: true });
-  const { stage, humanFirst } = state;
-  const stages = [
-    () => (
-      <BeginStage
-        onNextStage={(humanFirst) =>
-          setState({
-            stage: 1,
-            humanFirst,
-          })
-        }
-      />
-    ),
-    (humanFirst) => (
-      <PlayingStage
-        humanFirst={humanFirst}
-        onNextStage={() =>
-          setState({
-            stage: 0,
-            humanFirst: null,
-          })
-        }
-      />
-    ),
-  ];
+  const [state, setState] = useState({
+    stage: 0,
+    times: 0,
+    humanFirst: true,
+    latestWinner: null,
+  });
+  const { stage, humanFirst, latestWinner, times } = state;
+  const onFinish = useCallback(
+    (winner) => setState((old) => ({ ...old, stage: 0, latestWinner: winner })),
+    [setState]
+  );
   return (
     <div id="tic-tac-toe">
-      <div className="game">{stages[stage](humanFirst)}</div>
+      <div className="game">
+        <BeginStage
+          disabled={stage !== 0}
+          onNextStage={(humanFirst) =>
+            setState((old) => ({
+              ...old,
+              stage: 1,
+              humanFirst,
+              times: old.times + 1,
+            }))
+          }
+        />
+        <div style={{ position: "relative" }}>
+          <PlayingStage
+            key={times}
+            userPlayer={humanFirst ? "O" : "X"}
+            aiPlayer={humanFirst ? "X" : "O"}
+            onFinish={onFinish}
+          />
+          {stage === 0 && (
+            <div className="mask">
+              {latestWinner ? (
+                <div>Winner is {latestWinner}. Click button to restart!</div>
+              ) : (
+                <div>Click button to start!</div>
+              )}
+            </div>
+          )}
+        </div>
+      </div>
     </div>
   );
 }

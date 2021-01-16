@@ -1,103 +1,83 @@
-import React, { useCallback, useEffect, useState } from "react";
+import React, { useCallback, useEffect, useMemo, useState } from "react";
 import { Board } from "./GameBoard";
-import GameInfo from "./GameInfo";
 import "./TicTacToe.css";
-import { calculateWinner, generateStepByAI } from "./utils";
+import { calculateWinner, generateStepByAI, getNextPlayer } from "./utils";
 
-function useMoveHandler({ history, stepNumber, xIsNext, setState }) {
+function useMoveHandler({ state, setState }) {
+  const { squares } = state;
   return useCallback(
-    (i) => {
-      const newHistory = history.slice(0, stepNumber + 1);
-      const current = newHistory[newHistory.length - 1];
-      const squares = current.squares.slice();
-      if (calculateWinner(squares) || squares[i]) {
+    (i, player) => {
+      if (squares[i]) {
         return;
       }
-      squares[i] = xIsNext ? "X" : "O";
+      const tmp = [...squares];
+      tmp[i] = player;
+      const winner = calculateWinner(tmp);
       setState((old) => ({
         ...old,
-        history: [...newHistory, { squares }],
-        stepNumber: history.length,
-        xIsNext: !xIsNext,
+        squares: tmp,
+        winner,
+        finish: winner != null,
       }));
     },
-    [history, stepNumber, xIsNext, setState]
+    [squares, setState]
   );
 }
-function useHandleUserClick({ xIsNext, humanFirst, moveHandler }) {
+function useHandleUserClick({ userPlayer, nextPlayer, moveHandler, finish }) {
   return useCallback(
     (i) => {
-      if (humanFirst !== xIsNext) {
-        return;
-      }
-      moveHandler(i);
+      if (finish) return;
+      if (userPlayer !== nextPlayer) return;
+      console.log("user player: ", userPlayer, " next step: ", i);
+      moveHandler(i, userPlayer);
     },
-    [moveHandler, humanFirst, xIsNext]
+    [userPlayer, nextPlayer, moveHandler, finish]
   );
 }
 
-function useHandleHistoryJump({ setState, humanFirst }) {
-  return useCallback(
-    (step) => {
-      setState((old) => ({
-        ...old,
-        xIsNext: step % 2 === 0 && humanFirst,
-        stepNumber: step,
-      }));
-    },
-    [setState, humanFirst]
-  );
-}
-
-function useAIPlayer({ humanFirst, xIsNext, squares, moveHandler }) {
+function useAIPlayer({ finish, aiPlayer, nextPlayer, squares, moveHandler }) {
   useEffect(() => {
-    if (humanFirst === xIsNext) return;
-    const player = humanFirst ? "O" : "X";
-    const step = generateStepByAI(squares, player);
-    console.log("human first", humanFirst, "xIsNext", xIsNext, player, step);
-    moveHandler(step);
-  }, [humanFirst, xIsNext, squares, moveHandler]);
+    if (finish) return;
+    if (aiPlayer !== nextPlayer) return;
+    const step = generateStepByAI(squares, aiPlayer);
+    console.log("ai player: ", aiPlayer, " next step: ", step);
+    moveHandler(step, aiPlayer);
+  }, [aiPlayer, nextPlayer, squares, moveHandler, finish]);
 }
 
-export default function PlayingStage({ onNextStage, humanFirst }) {
-  const [state, setState] = useState({
-    history: [{ squares: Array(9).fill(null) }],
-    stepNumber: 0,
-    xIsNext: true,
-  });
-
+export default function PlayingStage({ onFinish, userPlayer, aiPlayer }) {
+  const [state, setState] = useState(() => ({
+    squares: Array(9).fill(null),
+    finish: false,
+    winner: null,
+  }));
+  const { squares, finish, winner } = state;
+  useEffect(() => {
+    if (winner) {
+      onFinish(winner);
+    }
+  }, [winner, onFinish]);
+  const nextPlayer = useMemo(() => getNextPlayer(squares), [squares]);
+  console.log("next player", nextPlayer);
   const moveHandler = useMoveHandler({
-    history: state.history,
+    state,
     setState,
-    stepNumber: state.stepNumber,
-    xIsNext: state.xIsNext,
+    onFinish,
   });
-
-  const handleHistoryJump = useHandleHistoryJump({ setState, humanFirst });
-  const { history, stepNumber, xIsNext } = state;
-  const squares = history[stepNumber].squares;
 
   const handleUserClick = useHandleUserClick({
-    xIsNext,
-    humanFirst,
+    userPlayer,
+    nextPlayer,
     moveHandler,
+    finish,
   });
-  useAIPlayer({ humanFirst, xIsNext, squares, moveHandler });
+
+  useAIPlayer({ finish, aiPlayer, squares, nextPlayer, moveHandler });
 
   return (
     <>
       <div className="game-board">
         <Board squares={squares} onUserClick={handleUserClick} />
-      </div>
-      <div className="game-info">
-        <GameInfo
-          onHistoryJump={handleHistoryJump}
-          history={state.history}
-          squares={squares}
-          xIsNext={state.xIsNext}
-          onRestart={onNextStage}
-          humanFirst={humanFirst}
-        />
       </div>
     </>
   );
