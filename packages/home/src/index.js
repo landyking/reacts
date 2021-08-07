@@ -33,7 +33,9 @@ function Home() {
 function App() {
   return (
     <Router>
-      <React.Suspense fallback={<div className="center">loading...</div>}>
+      <React.Suspense
+        fallback={<div className="center full-height">loading...</div>}
+      >
         <Switch>
           {menus.map((e) => {
             const CMP = e.cmp;
