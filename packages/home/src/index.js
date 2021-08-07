@@ -9,6 +9,11 @@ const menus = [
     title: "Tic Tac Toe",
     cmp: React.lazy(() => import("tic-tac-toe")),
   },
+  {
+    path: "/hello-react-admin",
+    title: "Hello React Admin",
+    cmp: React.lazy(() => import("hello-react-admin")),
+  },
 ];
 
 function Home() {
