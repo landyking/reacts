@@ -1,8 +1,9 @@
 import logo from "./logo.svg";
 import "./App.css";
-import TicTacToe from "tic-tac-toe";
+import TicTacToe, { useHelloWorld } from "tic-tac-toe";
 
 function App() {
+  const [state, setState] = useHelloWorld();
   return (
     <div className="App">
       <header className="App-header">
@@ -16,7 +17,7 @@ function App() {
           target="_blank"
           rel="noopener noreferrer"
         >
-          Learn React
+          Learn React {state}
         </a>
         <TicTacToe />
       </header>

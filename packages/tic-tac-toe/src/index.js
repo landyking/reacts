@@ -1,5 +1,8 @@
-import React, { Component } from "react";
+import React, { Component, useState } from "react";
 
+export function useHelloWorld() {
+  return useState("hello");
+}
 export default class extends Component {
   render() {
     return (
