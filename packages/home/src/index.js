@@ -1,7 +1,10 @@
 import React from "react";
 import ReactDOM from "react-dom";
-import { BrowserRouter as Router, Switch, Route, Link } from "react-router-dom";
+import { createBrowserHistory } from "history";
+import { Router, Switch, Route, Link } from "react-router-dom";
 import "./index.css";
+
+const history = createBrowserHistory({ basename: process.env.PUBLIC_URL });
 
 const menus = [
   {
@@ -32,7 +35,7 @@ function Home() {
 
 function App() {
   return (
-    <Router>
+    <Router history={history}>
       <React.Suspense
         fallback={<div className="center full-height">loading...</div>}
       >
