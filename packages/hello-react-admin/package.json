@@ -19,7 +19,11 @@
     "test:coverage": "nwb test-react --coverage",
     "test:watch": "nwb test-react --server"
   },
-  "dependencies": {},
+  "dependencies": {
+    "prop-types": "^15.7.2",
+    "ra-data-json-server": "^3.17.1",
+    "react-admin": "^3.17.1"
+  },
   "peerDependencies": {
     "react": "16.x"
   },

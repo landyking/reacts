@@ -46,7 +46,7 @@ function App() {
             const CMP = e.cmp;
             return (
               <Route key={e.path} path={e.path}>
-                <CMP />
+                <CMP hashPrefix={e.path} />
               </Route>
             );
           })}
